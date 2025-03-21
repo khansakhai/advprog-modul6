@@ -15,3 +15,11 @@ Screenshot:
 ![Commit 2 screen capture](/assets/images/commit2.png)
 
 Fungsi `handle_connection` telah dikembangkan untuk merespons *HTTP request* dengan mengirimkan konten HTML. Implementasi baru ini menggunakan `fs::read_to_string("hello.html")` untuk membaca file HTML dan `contents.len()` untuk menghitung panjang kontennya. Respons HTTP dibentuk dengan `format!()` yang mencakup status line `"HTTP/1.1 200 OK"`, *header* `Content-Length`, yang akan memberi tahu browser ukuran data yang akan diterima agar dapat memprosesnya dengan benar, serta isi file HTML dengan pemisah baris sesuai standar HTTP. Respons tersebut kemudian dikonversi ke bytes menggunakan `as_bytes()` dan dikirim ke browser melalui `stream.write_all()`. Dengan perubahan ini, browser dapat menerima dan menampilkan halaman web ketika mengakses alamat server.
+
+## Commit 3 Reflection
+
+Screenshot:
+
+![Commit 3 screen capture](/assets/images/commit3.png)
+
+Fungsi `handle_connection` dimodifikasi dengan beberapa perubahan penting. Perubahan ini dilakukan untuk menambahkan kemampuan server merespons berbagai jenis URL dengan konten yang sesuai. Pertama, saya mengambil baris pertama request dengan `buf_reader.lines().next().unwrap().unwrap()` untuk mendapatkan `request_line`. Kemudian menggunakan struktur kondisional if-else dengan *pattern matching* untuk memeriksa isi `request_line`, menghasilkan tuple `(status_line, file_path)` yang sesuai. Jika `request_line` adalah `"GET / HTTP/1.1"`, server mengembalikan status `"HTTP/1.1 200 OK"` dan file `hello.html`, sedangkan request lainnya menghasilkan `"HTTP/1.1 404 NOT FOUND"` dan `404.html`, Pembacaan file dilakukan dengan `fs::read_to_string(file_path)` yang mengembalikan konten HTML sesuai kondisi. Respons kemudian diformat menggunakan `format!()` dengan sintaks `{status_line}` dan `{length}` yang lebih ringkas dan dikirim ke browser dengan `stream.write_all()`.
